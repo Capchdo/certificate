@@ -2,7 +2,11 @@ module main
 
 go 1.20
 
-require github.com/baidubce/bce-sdk-go v0.9.159
+require (
+	github.com/baidubce/bce-sdk-go v0.9.159
+	github.com/spf13/cobra v1.8.0
+	github.com/spf13/viper v1.18.2
+)
 
 require (
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
@@ -16,11 +20,8 @@ require (
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/spf13/cast v1.6.0 // indirect
-	github.com/spf13/cobra v1.8.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/spf13/viper v1.18.2 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
-	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20240112132812-db7319d0e0e3 // indirect
 	golang.org/x/sys v0.16.0 // indirect
