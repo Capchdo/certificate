@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -10,7 +9,10 @@ import (
 
 	"github.com/baidubce/bce-sdk-go/services/cdn"
 	"github.com/baidubce/bce-sdk-go/services/cdn/api"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
+	"github.com/vbauerster/mpb/v8"
+	"github.com/vbauerster/mpb/v8/decor"
 )
 
 var wait bool
@@ -26,7 +28,7 @@ var purgeCmd = &cobra.Command{
 - https://console.bce.baidu.com/cdn/#/cdn/refresh/url
 - https://console.bce.baidu.com/cdn/#/cdn/refresh/path
 - https://console.bce.baidu.com/cdn/#/cdn/refresh/history`,
-	Example: "  baidu-bce purge status.haobit.top/ haobit.top/feed.rss",
+	Example: "  baidu-bce purge --wait status.haobit.top/ haobit.top/feed.rss",
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		tasks := []api.PurgeTask{}
@@ -78,9 +80,47 @@ func wait_until_completed(client *cdn.Client, id api.PurgedId) {
 		Id: string(id),
 	}
 
-	all_completed := false
-	for !all_completed {
-		fmt.Println("Wait a second…")
+	// 1. Initialize progress bars
+
+	// Get status for the first time to determine number of progress bars
+	status, err := client.GetPurgedStatus(&query)
+	if err != nil {
+		log.Fatalf("Fail to get purged status: %v.\n", err)
+	}
+
+	// To support color in Windows following both options are required
+	progress := mpb.New(
+		mpb.WithOutput(color.Output),
+		mpb.WithAutoRefresh(),
+	)
+	bars := []*mpb.Bar{}
+	red := color.New(color.FgRed)
+	green := color.New(color.FgGreen)
+
+	for _, task := range status.Details {
+		b := progress.AddBar(
+			100,
+			mpb.PrependDecorators(
+				decor.Name(task.Task.Url, decor.WC{C: decor.DindentRight | decor.DextraSpace}),
+				decor.OnCompleteMeta(
+					decor.OnComplete(
+						decor.Meta(decor.Name("Purging", decor.WCSyncSpaceR), to_meta_fn(red)),
+						"Completed",
+					),
+					to_meta_fn(green),
+				),
+			),
+			mpb.BarFillerClearOnComplete(),
+			mpb.AppendDecorators(
+				decor.OnComplete(decor.Percentage(), ""),
+			),
+		)
+		bars = append(bars, b)
+	}
+
+	// 2. Wait
+
+	for {
 		time.Sleep(1 * time.Second)
 
 		status, err := client.GetPurgedStatus(&query)
@@ -88,13 +128,23 @@ func wait_until_completed(client *cdn.Client, id api.PurgedId) {
 			log.Printf("Fail to get purged status, ignore: %v.\n", err)
 		}
 
-		all_completed = true
+		all_completed := true
+		for i, task := range status.Details {
+			// 顺序总固定
+			bars[i].SetCurrent(task.CachedDetail.Progress)
 
-		for _, detail := range status.Details {
-			fmt.Printf("Task: %v (%v)\n", detail.Task.Url, detail.Task.Type)
-			fmt.Printf("Progress: %v%%\n", detail.CachedDetail.Progress)
-
-			all_completed = all_completed && detail.CachedDetail.Status == "completed"
+			all_completed = all_completed && task.CachedDetail.Status == "completed"
 		}
+		if all_completed {
+			break
+		}
+	}
+
+	progress.Wait()
+}
+
+func to_meta_fn(c *color.Color) func(string) string {
+	return func(s string) string {
+		return c.Sprint(s)
 	}
 }
