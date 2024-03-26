@@ -71,7 +71,7 @@ $ sudo ./baidu-bce upload haobit.top /etc/letsencrypt/live/haobit.top/
 
 安装 certbot 时已经设置了 cron job 或 systemd timer 自动更新。（之后不用再运行 certbot）
 
-然而尚未设置 manual hook，不能用。
+最近设置了 manual hooks，但还未完整测试过，未必能用。
 
 > **Note**
 > 
