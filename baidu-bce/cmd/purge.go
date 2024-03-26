@@ -36,7 +36,7 @@ var purgeCmd = &cobra.Command{
 			tasks = append(tasks, build_task(u))
 		}
 
-		client := util.BuildClient()
+		client := util.BuildCDNClient()
 
 		log.Printf("Sending purge tasks…")
 		id, err := client.Purge(tasks)

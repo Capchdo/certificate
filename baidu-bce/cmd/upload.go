@@ -32,7 +32,7 @@ var uploadCmd = &cobra.Command{
 		main_domain := args[0]
 		certificate := read_certificate(args[1])
 
-		client := util.BuildClient()
+		client := util.BuildCDNClient()
 		put_certificate(client, main_domain, certificate)
 	},
 }
@@ -104,7 +104,6 @@ func put_certificate(client *cdn.Client, main_domain string, certificate api.Use
 	detail, err := client.GetCert(main_domain)
 	if err != nil {
 		log.Fatalf("Fail to verify the certificate of %v: %+v.\n", main_domain, err)
-
 	}
 	fmt.Printf("Successfully put to %v.\n", main_domain)
 	fmt.Printf("🔒 Certificate: %v (%v)\n", detail.CertName, detail.CertId)
