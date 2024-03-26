@@ -46,7 +46,7 @@ var recordCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("Fail to record: %+v.\n", err)
 		}
-		fmt.Printf("Successfully forget the %v record %v with value “%v” on %v.\n", type_, sub_domain, value, main_domain)
+		fmt.Printf("Successfully add the %v record %v with value “%v” on %v.\n", type_, sub_domain, value, main_domain)
 	},
 }
 
