@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"main/util"
+	"strings"
 
 	"github.com/baidubce/bce-sdk-go/services/dns"
 	"github.com/k0kubun/pp/v3"
@@ -11,9 +12,9 @@ import (
 )
 
 var forgetRecord = &cobra.Command{
-	Use:   "forget DOMAIN TYPE RESOURCE_RECORD VALUE",
+	Use:   "forget DOMAIN TYPE VALUE",
 	Short: "删除 DNS 解析",
-	Long: `删除指定 DOMAIN、TYPE、RESOURCE_RECORD、VALUE 的记录
+	Long: `删除指定 DOMAIN、TYPE、VALUE 的记录
 
 为避免误操作相近记录，需要提供全部信息。
 
@@ -22,13 +23,15 @@ var forgetRecord = &cobra.Command{
 等效网页：
 - https://console.bce.baidu.com/dns/#/dns/manage/list
 - https://console.bce.baidu.com/dns/#/dns/domain/list?zoneName=… → 选中 → 删除`,
-	Args:    cobra.ExactArgs(4),
-	Example: "  baidu-bce forget haobit.top TXT _acme-challenge 6kSGMVJoOhx1YMM-xc",
+	Args:    cobra.ExactArgs(3),
+	Example: "  baidu-bce forget _acme-challenge.haobit.top TXT 6kSGMVJoOhx1YMM-xc",
 	Run: func(cmd *cobra.Command, args []string) {
-		main_domain := args[0]
+		parts := strings.Split(args[0], ".")
+		main_domain := strings.Join(parts[len(parts)-2:], ".")
+		sub_domain := strings.Join(parts[:len(parts)-2], ".")
+
 		type_ := args[1]
-		sub_domain := args[2]
-		value := args[3]
+		value := args[2]
 
 		client := util.BuildDNSClient()
 		record := match_record(client, main_domain, type_, sub_domain, value)
