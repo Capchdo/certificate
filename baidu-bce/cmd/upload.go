@@ -27,7 +27,7 @@ var uploadCmd = &cobra.Command{
 - https://console.bce.baidu.com/cdn/#/cdn/list
 - https://console.bce.baidu.com/cdn/#/cdn/detail/https~domain=… → HTTPS 配置 → 证书选择`,
 	Args:    cobra.ExactArgs(2),
-	Example: "  baidu-bce upload haobit.top ./cert/haobit.top/",
+	Example: "  baidu-bce upload haobit.top /etc/letsencrypt/live/haobit.top/",
 	Run: func(cmd *cobra.Command, args []string) {
 		main_domain := args[0]
 		certificate := read_certificate(args[1])
