@@ -20,6 +20,8 @@ var recordCmd = &cobra.Command{
 
 另外，百度的API禁止相同RR同时有CNAME、TXT两种类型的记录，但网页上允许。
 
+与record的位置参数相同。
+
 等效网页：
 - https://console.bce.baidu.com/dns/#/dns/manage/list
 - https://console.bce.baidu.com/dns/#/dns/domain/list?zoneName=… → 添加解析`,
@@ -27,20 +29,21 @@ var recordCmd = &cobra.Command{
 	Example: "  baidu-bce record haobit.top TXT _acme-challenge 6kSGMVJoOhx1YMM-xc",
 	Run: func(cmd *cobra.Command, args []string) {
 		main_domain := args[0]
+		type_ := args[1]
 		sub_domain := args[2]
-		request := &dns.CreateRecordRequest{
-			Type:        args[1],
-			Rr:          sub_domain,
-			Value:       args[3],
-			Description: &description,
-		}
+		value := args[3]
 
 		client := util.BuildDNSClient()
-		err := client.CreateRecord(main_domain, request, "") // 目前没有必要保证幂等性，故未设置 client token
+		err := client.CreateRecord(main_domain, &dns.CreateRecordRequest{
+			Type:        type_,
+			Rr:          sub_domain,
+			Value:       value,
+			Description: &description,
+		}, "") // 目前没有必要保证幂等性，故未设置 client token
 		if err != nil {
 			log.Fatalf("Fail to record: %+v.\n", err)
 		}
-		fmt.Printf("Successfully record %v for %v.\n", sub_domain, main_domain)
+		fmt.Printf("Successfully forget the %v record %v with value “%v” on %v.\n", type_, sub_domain, value, main_domain)
 	},
 }
 

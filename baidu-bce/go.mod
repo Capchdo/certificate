@@ -5,6 +5,7 @@ go 1.20
 require (
 	github.com/baidubce/bce-sdk-go v0.9.159
 	github.com/fatih/color v1.16.0
+	github.com/k0kubun/pp/v3 v3.2.0
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.18.2
 	github.com/vbauerster/mpb/v8 v8.7.2
