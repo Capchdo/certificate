@@ -73,7 +73,7 @@ $ sudo ./baidu-bce upload haobit.top /etc/letsencrypt/live/haobit.top/
 
 最近设置了 manual hooks，但还未完整测试过，未必能用。
 
-> **Note**
+> [!NOTE]
 > 
 > 只是理论上如此，其实从未被验证过。
 
