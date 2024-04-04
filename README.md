@@ -28,6 +28,7 @@ $ sudo just get-cert "capchdo.com,capchdo.cn,*.capchdo.com,*.capchdo.cn"
 ```
 
 然后按照提示到“[智能云解析 - 百度智能云控制台](https://console.bce.baidu.com/dns/#/dns/domain/list?zoneName=haobit.top)”添加 TXT 记录解析，到`/path/to/acme-challenge`设置 HTTP 验证。
+一般来说，如果参数没有改变，只需要设置一次 TXT 记录，无需每次申请时修改。
 
 ### 检查证书
 
