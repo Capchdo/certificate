@@ -61,13 +61,7 @@ $ sudo just show-cert
 
 ### 安装
 
-参考 [CI](./.github/workflows/build.yml) 编译出可执行文件，放到任意位置并给予合适权限即可。下面是编译及交叉编译的例子。
-
-```shell
-$ cd baidu-bce
-$ go build -o baidu-bce.exe
-$ $env:GOOS = 'linux'; go build -o baidu-bce && scp baidu-bce …; $env:GOOS = ''
-```
+[下载可执行文件`baidu-bce`（Linux）或`baidu-bce.exe`（Windows）][latest-release]，放到任意位置并给予合适权限即可。
 
 ### 准备文件
 
@@ -136,3 +130,5 @@ $ sudo journalctl --system -t cert
 ### 为何需要 root 用户？
 
 似乎读写日志等文件需要`sudo`。
+
+[latest-release]: https://github.com/Capchdo/certificate/releases/latest
