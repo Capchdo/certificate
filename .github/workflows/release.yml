@@ -1,0 +1,26 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-go@v5
+      with:
+        go-version: '1.21'
+    - run: GOOS=linux go build -C baidu-bce -o baidu-bce -v main.go
+    - run: GOOS=windows go build -C baidu-bce -o baidu-bce.exe -v main.go
+    - run: 7z a certbot-hooks.zip certbot-hooks
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          baidu-bce
+          baidu-bce.exe
+          certbot-hooks.zip
+        fail_on_unmatched_files: true
