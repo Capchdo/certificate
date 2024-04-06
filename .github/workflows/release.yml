@@ -20,7 +20,7 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         files: |
-          baidu-bce
-          baidu-bce.exe
+          baidu-bce/baidu-bce
+          baidu-bce/baidu-bce.exe
           certbot-hooks.zip
         fail_on_unmatched_files: true
