@@ -1,21 +1,29 @@
 # Certificate
 
+[![Build](https://github.com/Capchdo/certificate/actions/workflows/build.yml/badge.svg)](https://github.com/Capchdo/certificate/actions/workflows/build.yml)
 ![Updated](https://img.shields.io/endpoint?url=https%3A%2F%2Fstatus.haobit.top%2Fupload-cert)
 
-申请、上传证书。
+利用 [certbot](https://certbot.eff.org/) 和[百度智能云](https://login.bce.baidu.com/)申请、上传证书。 
 
-## 申请证书 🆕
+## 先决条件 🛠️
 
-使用 [certbot](https://eff-certbot.readthedocs.io/en/stable/using.html) 申请证书。
-
-### 安装
-
-First you should install [certbot](https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal).
+首先要[安装 certbot](https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal)。
 
 ```shell
 $ sudo snap install --classic certbot
 $ sudo ln -s /snap/bin/certbot /usr/bin/certbot
 ```
+
+如果想要自动化，还要到百度智能云生成密钥，准备`./baidu-bce.yaml`，内容如下。
+
+```yaml
+access_key: ***
+secret_key: ***
+```
+
+## 申请证书 🆕
+
+使用 [certbot](https://eff-certbot.readthedocs.io/en/stable/using.html) 从 [Let's Encrypt](https://letsencrypt.org/zh-cn/) 申请证书。
 
 ### 新增证书
 
@@ -27,8 +35,13 @@ $ sudo just get-cert "haobit.top,*.haobit.top,*.app.haobit.top"
 $ sudo just get-cert "capchdo.com,capchdo.cn,*.capchdo.com,*.capchdo.cn"
 ```
 
-然后按照提示到“[智能云解析 - 百度智能云控制台](https://console.bce.baidu.com/dns/#/dns/domain/list?zoneName=haobit.top)”添加 TXT 记录解析，到`/path/to/acme-challenge`设置 HTTP 验证。
-一般来说，如果参数没有改变，只需要设置一次 TXT 记录，无需每次申请时修改。
+现在[`justfile`](https://just.systems/man/en/)中配置了[`certbot-hooks/*.sh`](./certbot-hooks/)，应当可以自动验证。
+
+若未配置，需要按照提示到“[智能云解析 - 百度智能云控制台](https://console.bce.baidu.com/dns/#/dns/domain/list?zoneName=haobit.top)”添加 TXT 记录解析，到服务器上的`/path/to/acme-challenge`设置 HTTP 验证。
+
+> [!NOTE]
+>
+> 一般来说，如果参数没有改变，只需要设置一次 TXT 记录，无需每次申请时修改；不过 Let's Encrypt 似乎不是这样。
 
 ### 检查证书
 
@@ -40,9 +53,15 @@ $ sudo just show-cert
 
 ## 上传证书 ☁️
 
-用`baidu-bce`部署到服务器。
+用`baidu-bce`上传到百度智能云，从而部署。
+
+> [!NOTE]
+>
+> 不必在自己服务器上部署证书；即使部署了，因为有CDN，证书也用不上。
 
 ### 安装
+
+参考 [CI](./.github/workflows/build.yml) 编译出可执行文件，放到任意位置并给予合适权限即可。下面是编译及交叉编译的例子。
 
 ```shell
 $ cd baidu-bce
@@ -52,11 +71,11 @@ $ $env:GOOS = 'linux'; go build -o baidu-bce && scp baidu-bce …; $env:GOOS = '
 
 ### 准备文件
 
-- `/path/to/certificate/{fullchain,privkey}.pem`
+- 之前申请到的`/path/to/certificate/{fullchain,privkey}.pem`
 
-  certbot 申请得到的证书。（可`ln -s /PATH/TO/CERTBOT/DIR/live/CERT_NAME cert/NAME`）
+  certbot 申请得到的证书。
 
-- `./baidu-bce.yaml`
+- 前述`./baidu-bce.yaml`
 
   百度智能云的`access_key`和`secret_key`。
 
@@ -74,7 +93,7 @@ $ sudo ./baidu-bce upload haobit.top /etc/letsencrypt/live/haobit.top/
 
 最近设置了 manual hooks，但还未完整测试过，未必能用。
 
-> [!NOTE]
+> [!CAUTION]
 > 
 > 只是理论上如此，其实从未被验证过。
 
