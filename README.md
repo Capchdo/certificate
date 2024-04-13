@@ -57,7 +57,7 @@ $ sudo just show-cert
 
 > [!NOTE]
 >
-> 在自己服务器上部署有效证书是不必须的；即使部署了，因为有CDN，用户获取到的证书也不是服务器上部署的证书。但是，仍然建议在服务器上部署有效证书或CDN供应商提供的证书，并开启CDN的有效证书验证，以保护服务器与CDN服务器间的通信。详细内容参见[配置HTTPS双向认证](https://cloud.baidu.com/doc/CDN/s/rkk7q1usv)。
+> 在自己服务器（源站）上部署有效证书是不必须的；即使部署了，因为有CDN，用户获取到的证书也不是服务器上部署的证书。但是，仍然建议在服务器上部署有效证书或CDN供应商提供的证书，并开启CDN的有效证书验证，以保护服务器与CDN服务器间的通信。需要注意的是，百度智能云似乎不支持验证源站证书。
 
 ### 安装
 
@@ -132,3 +132,7 @@ $ sudo journalctl --system -t cert
 似乎读写日志等文件需要`sudo`。
 
 [latest-release]: https://github.com/Capchdo/certificate/releases/latest
+
+### 有没有其他替代方案？
+
+[Cloudflare](https://cloudflare.com/)提供免费的CDN、免费的SSL证书，且支持源站有效证书验证。它易于配置和使用。但是在大陆地区访问速度感人。
